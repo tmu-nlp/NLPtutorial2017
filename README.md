@@ -20,4 +20,4 @@
 
 # みんなの進捗
 ![progress](https://github.com/tmu-nlp/NLPtutorial2017/blob/master/progress.png)  
-※ 手動更新なので、すぐには反映されません。
+※ 1分毎に更新されます。
