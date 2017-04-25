@@ -1,7 +1,11 @@
 import os
 import re
 import numpy as np
-import matplotlib.pyplot as plt
+import matplotlib
+
+matplotlib.use('Agg')
+
+import pylab as plt
 
 ignore = ['.git', 'README', 'data', 'script', 'test']
 maxcounts = [2.0, 2.0, 2.0, 1.0, 2.0, 2.0, 2.0, 2.0, 2.0, 1.0, 1.0, 2.0, 2.0, 1.0]
