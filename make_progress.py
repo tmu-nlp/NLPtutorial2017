@@ -4,7 +4,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 ignore = ['.git', 'README', 'data', 'script', 'test']
-maxcounts = [1.0, 2.0, 2.0, 1.0, 2.0, 2.0, 2.0, 2.0, 2.0, 1.0, 1.0, 2.0, 2.0, 1.0]
+maxcounts = [2.0, 2.0, 2.0, 1.0, 2.0, 2.0, 2.0, 2.0, 2.0, 1.0, 1.0, 2.0, 2.0, 1.0]
 
 user = list()
 progress = list()
