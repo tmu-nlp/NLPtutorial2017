@@ -9,3 +9,4 @@ for i in words:
             word_and_counts[i] =1
 for y,w in sorted(word_and_counts.items(),key=lambda x: x[1], reverse=True):
     print(y,w)
+print(len(word_and_counts))
