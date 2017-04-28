@@ -1,4 +1,4 @@
-#python word-count.py ../data/wiki-en-train.word
+#python word-count.py ../../data/wiki-en-train.word
 
 from collections import defaultdict
 import sys
