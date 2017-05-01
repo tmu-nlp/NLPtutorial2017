@@ -1,7 +1,7 @@
 from collections import defaultdict
 
-SRC = '01-train-input.txt'
-SRC = '../data/wiki-en-train.word'
+# SRC = '01-train-input.txt'
+SRC = '../../data/wiki-en-train.word'
 
 # GEN_MODEL_FILE = "sample.model"
 GEN_MODEL_FILE = "wiki.model"

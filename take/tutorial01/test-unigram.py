@@ -10,7 +10,7 @@ unk = 0
 GEN_MODEL_FILE = "wiki.model"
 
 # TEST_FILE = "01-test-input.txt"
-TEST_FILE = "../data/wiki-en-test.word"
+TEST_FILE = "../../data/wiki-en-test.word"
 
 """ load model """
 probability = defaultdict(lambda: 0)
