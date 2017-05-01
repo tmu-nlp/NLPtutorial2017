@@ -15,3 +15,4 @@ for line in f:
 
 for k, v in sorted(counts.items(), key = lambda x:x[1], reverse = True):
     print("%s : %d" %(k,v))
+print("重なり数：%d" %len(counts))

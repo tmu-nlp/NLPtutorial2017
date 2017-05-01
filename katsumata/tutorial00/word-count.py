@@ -8,5 +8,5 @@ with open(sys.argv[1], 'r') as f:
         for i in range(len(words)):
             word_count[words[i]] += 1
 
-    for word, count in sorted(word_count.items()):
+    for word, count in sorted(word_count.items(),reverse=True,key=lambda x:x[1]):
         print('%s : %d' %(word, count))
