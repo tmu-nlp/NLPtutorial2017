@@ -14,3 +14,4 @@ for l in f:
 
 for word,n in sorted(word_counts.items(),key = lambda x:x[1],reverse = True):
     print(word + " " + str(word_counts[word]))
+print("重なり数：",len(word_counts))
