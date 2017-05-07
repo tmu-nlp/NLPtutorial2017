@@ -5,8 +5,8 @@ f = open(sys.argv[1], "r")
 
 counts = defaultdict(lambda: 0)
 for line in f:
-    line = line.replace(',','')
-    line = line.replace('.','')
+#    line = line.replace(',','')
+#    line = line.replace('.','')
     line = line.lower()
     line = line.split()
     l = len(line)
@@ -15,3 +15,4 @@ for line in f:
 
 for k, v in sorted(counts.items(), key = lambda x:x[1], reverse = True):
     print("%s : %d" %(k,v))
+print("重なり数：%d" %len(counts))
