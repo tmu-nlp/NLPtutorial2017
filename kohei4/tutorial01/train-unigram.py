@@ -9,8 +9,8 @@ with open(sys.argv[1], 'r') as f:
 #        line = line.lower()
         w_list = line.split()
         w_list.append("</s>")
-        for i in range(len(w_list)):
-            w_cnt[w_list[i]] +=1
+        for w in w_list:
+            w_cnt[w] +=1
             t_cnt += 1
 
 with open('model_file.txt', 'w' ) as f2:

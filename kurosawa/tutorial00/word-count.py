@@ -5,8 +5,8 @@ f = open(sys.argv[1], "r")
 
 counts = defaultdict(lambda: 0)
 for line in f:
-    line = line.replace(',','')
-    line = line.replace('.','')
+#    line = line.replace(',','')
+#    line = line.replace('.','')
     line = line.lower()
     line = line.split()
     l = len(line)
