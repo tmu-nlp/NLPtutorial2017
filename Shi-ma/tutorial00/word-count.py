@@ -6,4 +6,5 @@ with open('../../data/wiki-en-train.word', 'r') as data:
         for word in line.split():
             word_count[word] += 1
 for i in sorted(word_count.items(), key=lambda x: x[1], reverse = 1):
-    print(i)
+    print(*i)
+print(len(word_count))
