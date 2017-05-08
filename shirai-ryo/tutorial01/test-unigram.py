@@ -17,7 +17,7 @@ with open("../../data/wiki-en-test.word") as test_file:
         words.append("</s>")
         for w in words:
             W += 1
-            P = 0.05 * 1000000
+            P = 0.05 / 1000000
             if w in probabilities:
                 P += 0.95 * probabilities[w]
             else:
