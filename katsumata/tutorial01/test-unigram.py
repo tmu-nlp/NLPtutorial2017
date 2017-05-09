@@ -19,7 +19,6 @@ with open('model_file.txt', 'r') as m_f:
     for row in m_f:
         words = row.split()
         probabilities[words[0]] = float(words[2])
-    #print(probabilities)
 #評価と結果表示
 with open(sys.argv[1], 'r') as test_file:
     for row in test_file:
@@ -36,7 +35,5 @@ with open(sys.argv[1], 'r') as test_file:
                 unk += 1
 #add 1 to unk
             H += -1 * math.log(P, 2)
-            #print (H)
-            #print (word_small)
 print ('entropy =  %f' %(H/W))
 print ('coverage =  %f' %((W - unk)/ W))
