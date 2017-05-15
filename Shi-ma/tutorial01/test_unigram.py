@@ -14,8 +14,8 @@ if __name__ == "__main__":
                 if word == '.':
                     continue
                 total_count += 1
-                if word in word_probabilities.keys():
-                    P = (1 - rate_unk)*word_probabilities[word] + rate_unk/N
+                if word.lower() in word_probabilities.keys():
+                    P = (1 - rate_unk)*word_probabilities[word.lower()] + rate_unk/N
                 else:
                     unk_count += 1
                     P = rate_unk/N
