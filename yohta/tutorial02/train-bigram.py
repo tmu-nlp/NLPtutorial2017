@@ -9,7 +9,7 @@ for line in t_f:
     words = line.split()
     words.insert(0,'<s>')
     words.append('</s>')
-    for i in range(1,len(words)):
+    for i in range(1,len(words)-1):
         counts[words[i-1] + ' ' + words[i]] += 1
         c_counts[words[i-1]] += 1
         counts[words[i]] += 1
