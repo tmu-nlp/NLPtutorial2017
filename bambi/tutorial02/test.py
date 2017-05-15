@@ -1,8 +1,3 @@
-
-# coding: utf-8
-
-# In[27]:
-
 import math
 from collections import defaultdict
 
@@ -16,7 +11,7 @@ lines = open("model_file.txt", "r").readlines()
 for line in lines:
     words = line.split("\t")
     probs[words[0]] = float(words[1])
-    
+
 with open("../data/wiki-en-test.word") as test_file:
     for line in test_file.readlines():
         words = line.split()
@@ -28,14 +23,3 @@ with open("../data/wiki-en-test.word") as test_file:
             H -= math.log(P2,2)
             W += 1
     print("entropy = {}".format(H/W))
-
-
-# In[ ]:
-
-
-
-
-# In[ ]:
-
-
-

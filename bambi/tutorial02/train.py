@@ -1,8 +1,3 @@
-
-# coding: utf-8
-
-# In[5]:
-
 from collections import defaultdict
 import math
 
@@ -29,14 +24,3 @@ with open(path) as training_file, open("model_file.txt","w") as output:
         probability = counts[ngram]/context_counts[context]
         output.write("{}\t{}\n".format(ngram, probability))
         #print(ngram, probability)
-
-
-# In[ ]:
-
-
-
-
-# In[ ]:
-
-
-
