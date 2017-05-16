@@ -20,8 +20,7 @@ def train(data):
     for key in word_count.keys():
         word_probabilities_1[key] = word_count[key] / total_count
     for key in bigram_count.keys():
-        word_probabilities_2[key] = bigram_count[key]/word_count[key.split()[0]]
-
+        word_probabilities_2[key] = bigram_count[key] / word_count[key.split()[0]]
     return word_probabilities_1, word_probabilities_2
 if __name__ == "__main__":
     with open('../../data/wiki-en-train.word', 'r') as data:
