@@ -2,7 +2,7 @@ import math
 from collections import defaultdict
 probabilities = defaultdict(lambda: 0)
 
-with open("model.txt", "r") as model:
+with open("model.word", "r") as model:
     for line in model.readlines():
         words = line.split()
         probabilities[words[0]] = words[1]
@@ -25,11 +25,11 @@ def test(file_path):
                     P += lam_1 * float(probabilities[word])#probabilities[word] is str, need to cast for calculation
                 else:
                     unknown += 1
-                    H -= math.log(P,2)
+                H -= math.log(P,2)
     print(file_path)
-    print("entropy = {}".format(+H/W))
-    print("coverage = {}".format(+(W-unknown)/W))
+    print("entropy = {}".format(H/W))
+    print("coverage = {}".format((W-unknown)/W))
 
 #test("../../test/01-train-input.txt")
 #test("../../test/01-test-input.txt")
-test("../../data/wiki-en-train.word")
+test("../../data/wiki-en-test.word")
