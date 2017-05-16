@@ -14,14 +14,7 @@ entropy = 100.0
 with open('model_file.txt', 'r') as m_f:
     for row in m_f:
         words = row.strip('\n').split(':')
-        #print (words)
         probs[words[0]] = words[1]
-        #print (words[1])
-#print (probs)
-"""        
-for key, value in probs.items():
-    print ('{} : {}'.format(key, value))
-"""
 """
 線形探索でlambda1,2を求める方
 """
@@ -40,12 +33,10 @@ for lambda1 in range(5,100,5):
         for words in contex:
             for i in range(1, len(words)):
                 bigram = ' '.join(words[i-1:i+1])
-                #print (bigram)
                 P1 = lambda1*.01 * float(probs[words[i]]) + (1 - lambda1*.01) / V
                 P2 = lambda2*.01 * float(probs[bigram]) + (1 - lambda2*.01) * P1
                 H += -1 * math.log2(P2)
                 W += 1
-                #print ('H, W: {},{}'.format(H,W))
         print('entoropy:{}'.format(H/W))
         print('lambda1 : {}\nlambda2 : {}'.format(lambda1*.01,lambda2*.01))
         if (H / W) < entropy:
@@ -55,6 +46,9 @@ for lambda1 in range(5,100,5):
 print ('\n After all......\n')
 print ('entropy = {}'.format(entropy))
 print ('lambda1 = {}, lambda2 = {}'.format(good_lambda1,good_lambda2))
+"""
+適当にlambda1,2決めてやるやつ
+"""
 """
 with open(sys.argv[1], 'r') as t_f:
     for line in t_f:
