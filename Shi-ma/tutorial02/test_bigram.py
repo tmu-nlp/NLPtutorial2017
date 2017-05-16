@@ -8,7 +8,7 @@ def witten_bell(data):
     rate_2 = collections.defaultdict(lambda: 0)
     for line in data:
         line = '<s> ' + line
-        line = line.lower().strip() + ' </s>'
+        line = line.lower().strip()
         bigram = train_bigram.ngram(line.split(), 2)
         for word_1, word_2 in bigram:
             word_c[word_1] += 1
@@ -25,12 +25,12 @@ if __name__ == "__main__":
     entropy = 0; total_count = 0;
     with open('../../data/wiki-en-train.word', 'r') as data_train:
         word_probabilities_1, word_probabilities_2 = train_bigram.train(data_train)
-    with open('../../data/wiki-en-test.word', 'r') as data_test:
-        rate_2 = witten_bell(data_test)
+    with open('../../data/wiki-en-train.word', 'r') as data_train:
+        rate_2 = witten_bell(data_train)
     with open('../../data/wiki-en-test.word', 'r') as data_test:
         for line in data_test:
             line = '<s> ' + line
-            line = line.lower().strip() + ' </s>'
+            line = line.lower().strip()
             bigram = train_bigram.ngram(line.split(), 2)
             total_count += len(bigram) + 1
             for word_1, word_2 in bigram:
