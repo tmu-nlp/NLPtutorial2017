@@ -8,7 +8,7 @@ with open(sys.argv[1], 'r') as training_file:
         words = line.split()
         words.append('</s>')
         words.insert(0, '<s>')
-        for i in range(1,len(words)):
+        for i in range(1,len(words)-1):
             temp_str1 = ''
             temp_str1 = ' '.join(words[i-1:i+1])
             unigram_word = ''
