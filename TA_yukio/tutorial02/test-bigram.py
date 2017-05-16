@@ -1,10 +1,10 @@
-#python test-bigram.py ../../data/wiki-en-test.word model.txt 0.95 1000000
+#python test-bigram.py ../../data/wiki-en-test.word model.txt 0.95 0.95 1000000
 
 from collections import defaultdict
 import sys
 import math
 
-def test_bigram(fin_path, model_path, lambda_1, vocabulary):
+def test_bigram(fin_path, model_path, lambda_1, lambda_2, vocabulary):
     word_token = 0
     H = 0
 
@@ -12,7 +12,7 @@ def test_bigram(fin_path, model_path, lambda_1, vocabulary):
     with open(fin_path, "r") as fin, open(model_path, "r") as fm:
         for line in fm:
             ngram, prob = line.strip().split("\t")
-            probabilities[word] = float(prob)
+            probabilities[ngram] = float(prob)
 
         for line in fin:
             words = line.strip().split(" ")
@@ -28,8 +28,5 @@ def test_bigram(fin_path, model_path, lambda_1, vocabulary):
     print("Entropy = {}".format(H / word_token))
 
 if __name__ == "__main__":
-    test_bigram(sys.argv[1], sys.argv[2], float(sys.argv[3]), int(sys.argv[4]))
+    test_bigram(sys.argv[1], sys.argv[2], float(sys.argv[3]), float(sys.argv[4]), int(sys.argv[5]))
 
-#
-lambda_1 = float(sys.argv[1])
-lambda_2 = float(sys.argv[2])

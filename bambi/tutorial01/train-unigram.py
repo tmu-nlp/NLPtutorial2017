@@ -2,7 +2,7 @@ from collections import defaultdict
 counts = defaultdict(lambda: 0)
 total_count = 0
 file_path = "../../data/wiki-en-train.word"
-model_file = "model.txt"
+model_file = "model.word"
 with open(file_path, "r") as file, open(model_file,"w") as output:
     for line in file.readlines():
         words = line.split()
