@@ -2,7 +2,7 @@ import math
 from collections import defaultdict
 probabilities = defaultdict(lambda: 0)
 
-with open("model.txt", "r") as model:
+with open("model.word", "r") as model:
     for line in model.readlines():
         words = line.split()
         probabilities[words[0]] = words[1]
