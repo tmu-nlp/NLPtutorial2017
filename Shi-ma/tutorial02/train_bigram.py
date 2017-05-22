@@ -11,7 +11,7 @@ def train(data):
     word_probabilities_2 = collections.defaultdict(lambda :0)
     for line in data:
         line = '<s> ' + line
-        line = line.lower().strip() + ' </s>'
+        line = line.lower().strip()
         bigram = ngram(line.split(), 2)
         total_count += len(bigram) + 1
         for word_1, word_2 in bigram:
