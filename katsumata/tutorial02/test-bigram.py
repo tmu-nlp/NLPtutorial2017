@@ -31,7 +31,7 @@ for lambda1 in range(5,100,5):
         H = 0
         W = 0
         for words in contex:
-            for i in range(1, len(words)):
+            for i in range(1, len(words)-1):
                 bigram = ' '.join(words[i-1:i+1])
                 P1 = lambda1*.01 * float(probs[words[i]]) + (1 - lambda1*.01) / V
                 P2 = lambda2*.01 * float(probs[bigram]) + (1 - lambda2*.01) * P1
