@@ -97,7 +97,8 @@ class ngram:
     
     def word_seg_viterbi_file(self,f_name,n_gram_model=1):
         for line in open(f_name,"r",encoding="UTF-8"):
-            print(self.word_seg_viterbi(line.replace("　","")))
+            _=self.word_seg_viterbi(line.replace("　",""))
+            print(" ".join(_))
 
 
 
