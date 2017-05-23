@@ -5,8 +5,6 @@
 
 import sys, math
 from collections import defaultdict
-from IPython.core.interactiveshell import InteractiveShell
-InteractiveShell.ast_node_interactivity = "all"
 
 
 # In[2]:
@@ -67,11 +65,10 @@ def calc_unigram_model(corpus_list):
 
     for n_gram in n_gram_dict:
         n_minus_1_gram = " ".join(n_gram.split()[:-1])
-        try:
-            P_n_gram = n_gram_dict[n_gram] / vocab_size
-            print(n_gram, "\t", P_n_gram)
-        except ZeroDivisionError:
-            pass
+
+        P_n_gram = n_gram_dict[n_gram] / vocab_size
+        print(n_gram, "\t", P_n_gram)
+
     return
 
 
