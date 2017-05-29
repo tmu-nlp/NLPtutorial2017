@@ -24,15 +24,15 @@ with open('../../data/wiki-ja-train.word', 'r') as uni_file:
 for word, count in word_count.items():
     probability = count/total_count
     probabilities[word] = probability
-#print (probabilities)
+#print (probabilities+'\n')
 count = 0
 inner_couunt = 0
 kitikiticount = 0
 with open('../../data/wiki-ja-test.txt', 'r') as test_file, open('my_answer.word', 'w') as ans_file:
     for line in test_file:
         #前向きステップ
-        #best_edge = dict()
-        #best_score = dict()
+        best_edge = dict()
+        best_score = dict()
         best_edge[0] = None
         best_score[0] = 0
         for word_end in range(1, len(line)+1):
@@ -71,6 +71,12 @@ with open('../../data/wiki-ja-test.txt', 'r') as test_file, open('my_answer.word
         #後ろ向きステップ               
         words = []
         next_edge = best_edge[len(best_edge)-1]
+        #print ('疑似コードママ')
+        #print (len(best_edge)-1)
+        #print (best_edge)
+        #print ('line.length')
+        #print (len(line))
+        #next_edge = best_edge[len(line)]
         #print ('next_edge')
         #print (next_edge)
         while next_edge != None:
