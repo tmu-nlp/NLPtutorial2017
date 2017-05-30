@@ -17,7 +17,7 @@ def train(data):
 
 def word_segmentation(data, word_probabilities, data_out):
     rate_unk = 0.05; N = 1000000
-    pettern = re.compile(r'^[a-zA-Z]+$')
+    pattern = re.compile(r'^[a-zA-Z]+$')
     for line in data:
         best_edge = [None for i in range(len(line))]
         best_score = [10**10 for i in range(len(line))]
@@ -25,7 +25,7 @@ def word_segmentation(data, word_probabilities, data_out):
         for word_end in range(1, len(line)):
             for word_begin in range(0, word_end):
                 word = line[word_begin:word_end]
-                word_alpha = re.match(pettern, unicodedata.normalize('NFKC', word))
+                word_alpha = pattern.match(unicodedata.normalize('NFKC', word))
                 if word in word_probabilities.keys() or len(word) == 1 or word_alpha:
                     if word in word_probabilities.keys():
                         prob = (1 - rate_unk)*word_probabilities[word] + rate_unk/N
