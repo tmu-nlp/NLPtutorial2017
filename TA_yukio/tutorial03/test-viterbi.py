@@ -1,5 +1,6 @@
 #python test-viterbi.py ../../data/wiki-ja-train.word model.txt ../../data/wiki-ja-test.txt my_answer.word 0.95 1000000
 #../../script/gradews.pl ../../data/wiki-ja-test.word my_answer.word
+
 from collections import defaultdict
 import sys
 import math
@@ -25,8 +26,8 @@ def test_viterbi(fin_path, model_path, fout_path, lambda_1, vocabulary):
             words = line.split(" ")
             unigram_probabilities[words[0]] = float(words[1])
         for line in fin:
-            best_edge = {}
-            best_score = {}
+            best_edge = dict()
+            best_score = dict()
             line = line.strip()
             best_edge[0] = "NULL"
             best_score[0] = 0
@@ -40,7 +41,7 @@ def test_viterbi(fin_path, model_path, fout_path, lambda_1, vocabulary):
                         if my_score < best_score[word_end]:
                             best_score[word_end] = my_score
                             best_edge[word_end] = (word_begin, word_end)
-            words = []
+            words = list()
             next_edge = best_edge[len(best_edge) - 1]
             while next_edge != "NULL":
                 word = line[next_edge[0]:next_edge[1]]
