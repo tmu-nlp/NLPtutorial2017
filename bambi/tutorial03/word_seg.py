@@ -1,19 +1,19 @@
 from collections import defaultdict
 import math
-unigram_probs = defaultdict(int)
+unigram_probs = defaultdict(float)
 # load unigram-probs model
 #unigram_model_path = "../test/04-model.txt"
 unigram_model_path = "model_jp.txt"
 for line in open(unigram_model_path, "r"):
-    words = line.split()
+    words = line.strip().split(" ")
     unigram_probs[words[0]] = float(words[1])
 #input_path = "../test/04-input.txt"
-input_path = "../../data/wiki-ja-test.word"
+input_path = "../../data/wiki-ja-test.txt"
 
 # for exercise 1
 lambda_1 = 0.95
 unknown_lambda = 1 - lambda_1
-volume = 1000000.0
+volume = 1000000
 P = unknown_lambda/volume
 
 answer = ""
@@ -21,7 +21,7 @@ for line in open(input_path, "r"):
     best_edge = {}
     best_score = {}
     #forward step
-    line = line.strip().replace(" ", "") # python3, str is unicode by default so no need to encode
+    #line = line.strip().replace(" ", "") # python3, str is unicode by default so no need to encode
     best_edge[0] = None
     best_score[0] = 0
     '''
@@ -33,7 +33,9 @@ for line in open(input_path, "r"):
         for word_begin in range(0,word_end):
             word = line[word_begin:word_end] # get the substring
             if word in unigram_probs or len(word) == 1: # only known words
-                prob = P + lambda_1 * unigram_probs[word]
+                prob = P
+                if word in unigram_probs:
+                    prob += lambda_1 * unigram_probs[word]
                 my_score = best_score[word_begin] - math.log(prob,2)
                 if my_score < best_score[word_end]: # best score means shorter one
                     best_score[word_end] = my_score
@@ -48,8 +50,9 @@ for line in open(input_path, "r"):
         words.append(word)
         next_edge = best_edge[next_edge[0]]
     words.reverse()
-    answer = " ".join(words)
-    print(answer)
+    answer += " ".join(words).strip(" ")
+    #(answer)
 
 with open("my_answer.word","w") as output:
+    print(answer)
     output.write(answer)
