@@ -25,10 +25,11 @@ for key,value in transition.items():
 for key,value in emission.items():
     print('emission : {}\t{}'.format(key,value))
 """
-counter = 0
+#counter = 0
 with open('../../data/wiki-en-test.norm', 'r') as test, open('my_answer.pos', 'w') as ans_file:
     for line in test:
-        counter = 0
+        #counter = 0
+        #前向きステップ
         words = line.strip().split()
         l = len(words)
         best_score = dict()
@@ -67,6 +68,7 @@ with open('../../data/wiki-en-test.norm', 'r') as test, open('my_answer.pos', 'w
                     #print ('count'+str(counter))
                     #print (str(l)+' </s>')
         #print ('直前'+str(l))            
+        #後ろ向きステップ
         tags = list()
         next_edge = best_edge[str(l+1)+' </s>']
         while next_edge != '0 <s>':
