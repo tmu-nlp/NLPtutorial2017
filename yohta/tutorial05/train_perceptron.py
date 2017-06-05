@@ -16,7 +16,7 @@ def predict_one(w,phi):
         return -1
 
 def create_features(x):
-    phi = defaultdict(int)
+    phi = defaultdict(lambda :0)
     words = x.strip().split()
     for word in words:
         phi['UNI:' + word] += 1
@@ -24,20 +24,20 @@ def create_features(x):
 
 def update_weights(w,phi,y):
     for name,value in phi.items():
-        w[name] += int(value) * y
+        w[name] += value * y
 
 if __name__ == '__main__':
-    w = defaultdict(int)
-#    l = ?? #iteration? : 試行数？
-#    for i in range(l):
-    with open('../../data/titles-en-train.labeled','r') as t_f:
-        for line in t_f:
-            phi = defaultdict(int)
-            y,x = line.strip().split('\t') #y is int , x is words
-            for word,value in create_features(x).items():
-                phi[word] += value
+    w = defaultdict(lambda :0)
+    l = 1 #iteration? : 試行数？
+    for i in range(l):
+        with open('../../data/titles-en-train.labeled','r') as t_f:
+            for line in t_f:
+                phi = defaultdict(lambda :0)
+                y,x = line.strip().split('\t') #y is int , x is words
+                for word,value in create_features(x).items():
+                    phi[word] = value
                 y_ = predict_one(w,phi)
-                if y_ != y:
+                if y_ != int(y):
                     update_weights(w,phi,int(y))
     with open('model_file.txt','w') as m_f:
 #        for line in m_f:

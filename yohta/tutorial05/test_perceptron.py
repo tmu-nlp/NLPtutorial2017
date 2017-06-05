@@ -3,12 +3,12 @@ from train_perceptron import predict_one, create_features
 
 def predict_all(model_file,input_file):
     with open(model_file,'r') as m_f,open(input_file,'r') as i_f:
-        phi = defaultdict(int)
-        w = defaultdict(int)
+        w = defaultdict(lambda :0)
         for line in m_f:
             word,value = line.split('\t')
             w[word] = int(value)
         for x in i_f:
+            phi = defaultdict(lambda :0)
             for k,v in create_features(x).items():
                 phi[k] = int(v)
             y_ = predict_one(w,phi)
