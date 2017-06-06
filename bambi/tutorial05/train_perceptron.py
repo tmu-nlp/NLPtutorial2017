@@ -1,4 +1,3 @@
-
 from collections import defaultdict
 def predict_one(w, phi):
     score = 0
@@ -20,17 +19,22 @@ def create_feature(x):
 def update_weight(w,phi,y):
     for name, value in phi.items():
         w[name] += float(value) * float(y)
+def train(w):
+    for line in open(input_file):
+        y, x = line.split("\t")
+        phi = create_feature(x)
+        y_ = predict_one(w,phi)
+        if float(y_) != float(y):
+            update_weight(w,phi,y)
 if __name__ == "__main__":
     #input_file = "../test/03-train-input.txt"
     input_file = "../../data/titles-en-train.labeled"
 
     w = defaultdict(int)
-    for line in open(input_file):
-        y, x = line.split("\t")
-        phi = create_feature(x)
-        y_ = predict_one(w,phi)
-        if y_ != y:
-            update_weight(w,phi,y)
+    l_iter = 10
+    for i in range(l_iter):
+        train(w)
+
     with open("model.txt", "w") as output:
         for name, value in w.items():
             print("{}\t{}".format(name,value),file=output)
