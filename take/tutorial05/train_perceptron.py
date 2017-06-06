@@ -2,7 +2,6 @@ from collections import defaultdict
 import sys
 from pprint import pprint
 
-# phi = defaultdict(lambda : 0)
 def create_features(sent):
     phi = defaultdict(lambda : 0)
     words = sent.strip().split(' ')
@@ -23,10 +22,8 @@ def predict_one(_w, _phi):
 import random
 if __name__ == '__main__':
 
-    # train_data_test = '../../test/03-train-input.txt'
     train_data = '../../data/titles-en-train.labeled'
 
-    # n_iter = 20
     n_iter = int(sys.argv[1])
     feat = sys.argv[2]
 
@@ -44,29 +41,18 @@ if __name__ == '__main__':
 
     # pprint(train_line_list)
     for _ in range(n_iter):
-        # w = defaultdict(lambda: 0)
-        # with open(train_data) as f:
-        #     _templine = []
-        #     for l in f:
-        #         _templine.append(l)
         if feat == 'shff':
             random.shuffle(train_line_list)
-        # pprint(train_line_list)
         for ll in train_line_list:
-            # y_label, sentence = ll.split('\t')
             y_label, sentence = ll[0], ll[1]
             phi = create_features(sentence)
             y_pred = predict_one(w, phi)
-            # print('{}, {}'.format(type(y_pred),type(y_label)))
             if not y_pred == int(y_label):
                 for name, value in phi.items():
                     w[name] += int(value) * int(y_label)
-        # weights_history.append(w)
-        # print(len(w))
 
     with open(out_modelfile, 'w') as f:
         for k,v in w.items():
-            # if k == 'aso' or k == 'kani':
             print('{}\t{}'.format(k,v), file=f)
 
     print('Finish {}'.format(out_modelfile))
