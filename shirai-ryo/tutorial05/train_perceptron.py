@@ -1,11 +1,3 @@
-# メモ
-# 何をやりたいか（なんとなくわかる範囲で）
-# Xという事例において、ある単語が何回出てくるか
-# そして、その単語には人物かどうかの評価の値がついている
-# （プラスなら人物、マイナスなら人物じゃない）
-# 単語　×　評価の値を全て足し合わせたもの＝重み付き和
-# 0以上ならyes(+1) 、0未満なら(-1)。
-
 from collections import defaultdict
 
 
@@ -46,19 +38,3 @@ if __name__ == "__main__":
     with open('model_file.word','w') as model:
         for word,predict in w.items():
             model.write('{} {}\n'.format(word,predict))
-
-
-# word_dict = defaultdict(int)
-#
-# with open("../../data/titles-en-train.labeled") as text:
-#     #疑似コードでいう、model_file？
-#     for line in text:
-#         words = line.split()
-#         for word in words:
-#             word_dict[word] += 1
-
-# with open("model_file.word", "w") as text:
-#     for word, count in word_dict.items():
-#         text.write(word + " " + str(count) + "\n")
-
-#これユニグラムのやつだった（死）
