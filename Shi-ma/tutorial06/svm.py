@@ -46,14 +46,14 @@ def GET_W(w, name, c, i, last):
     return w[name]
 
 def train_svm(data_train, w, i):
-    margen = 45
+    margin = 45
     for line in data_train:
         y, txt = line.split('\t')
         y = int(y)
         txt = txt.lower()
         phi = CREATE_FEATURES(txt)
         val = PREDICT_ONE(w, phi, calc=True)*y
-        if val <= margen:
+        if val <= margin:
             UPDATE_WEIGHTS(w, phi, y, i)
 
 def train_svm_epoch(epoch, path_data_train):
