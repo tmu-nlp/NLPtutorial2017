@@ -45,7 +45,7 @@ class LR():
             sum+=ws[w]*phi_dict[w]
         return sum
     # train the model with iter_times(100) and learning_rate alpha(0,001)
-    def train(self, iter_times=100, alpha=0.001, margin=10,c=0.1, testdata=None):
+    def train(self, iter_times=100, alpha=0.001, margin=10,c=1, testdata=None):
         accuracies=[]
         for ind,iter_ in enumerate(range(iter_times)):
             for label,line in self.training_data:
@@ -56,10 +56,10 @@ class LR():
                 if exp_e*int(label) < margin:
                     update_phi_dict=self.grad_logistic(label,phi_dict,exp_e)
                     for w in update_phi_dict:
-                        #if abs(self.weights[w])<c:
-                        #    self.weights[w]=0
-                        #else:
-                        #    self.weights[w]-=sign(self.weights[w])*c
+                        if abs(self.weights[w])<c:
+                            self.weights[w]=0
+                        else:
+                            self.weights[w]-=sign(self.weights[w])*c
 
                         self.weights[w]+=alpha*update_phi_dict[w]
             
