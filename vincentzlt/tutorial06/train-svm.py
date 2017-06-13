@@ -105,7 +105,11 @@ class SGD():
             output += self.ws[w] * phi_dict[w]
         #input(output)
         return output
-
+    
+    def predict(self, f_name):
+        for line in open(f_name,"r",encoding="utf-8"):
+            predicated_label=self.predict_one_line(line)
+            print("{predict}\t{sentence}".format(predict=predicated_label,sentence=line))
 
 # In[117]:
 
