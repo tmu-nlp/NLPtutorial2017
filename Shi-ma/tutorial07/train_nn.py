@@ -56,7 +56,7 @@ def UPDATE_WEIGHTS(network, phi, gra, rate_train, num_node):
 
 
 def train_nn(data_train_list, network, num_node, ids):
-    rate_train = 0.050
+    rate_train = 0.02
 
     for line in data_train_list:
         y, txt = line.split('\t')
@@ -91,7 +91,7 @@ def train_nn_epoch(epoch, ids, path_data_train, num_node, path_data_network, pat
 
 
 if __name__ == '__main__':
-    epoch = 2
+    epoch = 3
     num_node = 2
     ids = collections.defaultdict(lambda: len(ids))
     path_data_train = '../../data/titles-en-train.labeled'
