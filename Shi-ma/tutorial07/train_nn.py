@@ -6,12 +6,26 @@ import pickle
 
 
 def CREATE_IDS(data_train, ids):
-    for line in data_train:
+    for num_line, line in enumerate(data_train):
         y, txt = line.split('\t')
         txt = txt.lower()
         words = txt.split()
         for word in words:
             ids['UNI:' + word]
+    num_line += 1
+
+    return num_line
+
+
+def CREATE_FEAT_LAB(data_train, ids, num_line):
+    feat_lab = [0 for i in range(num_line)]
+    for i, line in enumerate(data_train):
+        y, txt = line.split('\t')
+        y = int(y)
+        txt = txt.lower()
+        feat_lab[i] = (CREATE_FEATURES(txt, ids), y)
+
+    return feat_lab
 
 
 def CREATE_FEATURES(txt, ids, flag_test=0):
@@ -55,14 +69,10 @@ def UPDATE_WEIGHTS(network, phi, gra, rate_train, num_node):
         network[i][1] += rate_train*gra[i+1]
 
 
-def train_nn(data_train_list, network, num_node, ids):
-    rate_train = 0.02
+def train_nn(feat_lab, network, num_node, ids):
+    rate_train = 0.01
 
-    for line in data_train_list:
-        y, txt = line.split('\t')
-        y = int(y)
-        txt = txt.lower()
-        phi_0 = CREATE_FEATURES(txt, ids)
+    for phi_0, y in feat_lab:
         phi = FORWARD_NN(network, phi_0)
         gra, error = BACKWARD_NN(network, phi, y, num_node)
         UPDATE_WEIGHTS(network, phi, gra, rate_train, num_node)
@@ -70,28 +80,28 @@ def train_nn(data_train_list, network, num_node, ids):
 
 def train_nn_epoch(epoch, ids, path_data_train, num_node, path_data_network, path_data_ids):
     with open(path_data_train, 'r') as data_train:
-        CREATE_IDS(data_train, ids)
-    with open(path_data_ids, 'w') as data_ids:
-        for key, value in ids.items():
-            print('{}\t{}'.format(key, value), file=data_ids)
+        num_line = CREATE_IDS(data_train, ids)
+    with open(path_data_ids, 'wb') as data_ids:
+        pickle.dump(dict(ids), data_ids)
 
-    w_0 = np.array((np.random.rand(num_node, len(ids))-0.5)/5)
-    b_0 = (np.random.rand(num_node) - 0.5) / 5
-    w_1 = np.array([(np.random.rand(num_node)-0.5)/5])
-    b_1 = (np.random.rand(1) - 0.5) / 5
+    with open(path_data_train, 'r') as data_train:
+        feat_lab = CREATE_FEAT_LAB(data_train, ids, num_line)
+
+    w_0 = (np.random.rand(num_node, len(ids))-0.5)/5
+    b_0 = np.zeros(num_node)
+    w_1 = (np.random.rand(1, num_node)-0.5)/5
+    b_1 = np.zeros(1)
     network = [[w_0, b_0], [w_1, b_1]]
 
     for num_epoch in range(epoch):
-        with open(path_data_train, 'r') as data_train:
-            data_train_list = list(data_train)
-            random.shuffle(data_train_list)
-            train_nn(data_train_list, network, num_node, ids)
+        random.shuffle(feat_lab)
+        train_nn(feat_lab, network, num_node, ids)
     with open(path_data_network, 'wb') as data_network:
         pickle.dump(network, data_network)
 
 
 if __name__ == '__main__':
-    epoch = 3
+    epoch = 5
     num_node = 2
     ids = collections.defaultdict(lambda: len(ids))
     path_data_train = '../../data/titles-en-train.labeled'

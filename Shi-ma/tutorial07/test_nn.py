@@ -9,12 +9,9 @@ def sign(x):
         return -1
 
 if __name__ == '__main__':
-    ids = collections.defaultdict(lambda: 0)
-    with open('train_nn_ids.result', 'r') as data_ids:
-        for each_ids in data_ids:
-            key, value = each_ids.split('\t')
-            ids[key] = int(value)
-            
+    with open('train_nn_ids.result', 'rb') as data_ids:
+        ids = pickle.load(data_ids)
+
     with open('train_nn_network.result', 'rb') as data_network:
         network = pickle.load(data_network)
 
