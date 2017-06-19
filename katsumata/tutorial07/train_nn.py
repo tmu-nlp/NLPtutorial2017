@@ -45,7 +45,7 @@ def backward_nn(net, phiS, y, e_c):
 if __name__ == '__main__':
     """
     やることまとめ
-    単語をid化,train_dataからラベルと、テキストから素性を持ってくる(多分バッチ)
+    単語をid化,train_dataからラベルと、テキストから素性を持ってくる
     ネットワーク、つまり重みを初期化する
     持ってきたラベルと素性を一つずつ(for)持ってきてforward,backwardそして重み更新して終わり
 
