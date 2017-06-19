@@ -1,6 +1,7 @@
 import numpy as np
 import pickle
 from collections import defaultdict
+import random
 
 ids = defaultdict(lambda:len(ids))
 
@@ -27,17 +28,19 @@ def forward_nn(network, phi_0):
         phiS[i] = np.tanh(np.dot(w, phiS[i-1]) +b)
     return phiS    
 
-def backward_nn(net, phiS, y):
+def backward_nn(net, phiS, y, e_c):
     J = len(net)
     delta = [0 for i in range(J)]
     delta.append(np.array([y-phiS[J][0]]))
-    print (y - phiS[J][0])
+    if (1 if phiS[J][0] >= 0 else -1) != y:
+        e_c += 1
+    #print (y - phiS[J][0])
     delta_ = [0 for i in range(J+1)]
     for i in reversed(range(J)):
         delta_[i+1] = delta[i+1]*(1-phiS[i+1]**2)
         w, b = net[i]
         delta[i] = np.dot(delta_[i+1], w)
-    return delta_    
+    return delta_, e_c    
 
 if __name__ == '__main__':
     """
@@ -47,7 +50,7 @@ if __name__ == '__main__':
     持ってきたラベルと素性を一つずつ(for)持ってきてforward,backwardそして重み更新して終わり
 
     """
-    l = 2 
+    l = 5 
     train_f = '../../data/titles-en-train.labeled'
     #test_f = '../../data/titles-en-test.word'
     test_f = '../../test/03-train-input.txt'
@@ -61,13 +64,14 @@ if __name__ == '__main__':
     with open(train_f, 'r') as train_init:
         for line in train_init:
             y, x = line.strip().split('\t')
-            words = x.split()
+            words = x.lower().split()
             for word in words:
                  ids['UNI:'+word]
     with open(train_f, 'r') as train_init:
         for line in train_init:
             y, x = line.strip().split('\t')
             y = int(y)
+            x = x.lower()
             #feat_labに一文の素性と正解ラベルを入れていく
             feat_lab.append((create_features(x), y))
         #ここからネットワークの初期化
@@ -78,13 +82,17 @@ if __name__ == '__main__':
         network = [[weight_0, b_0], [weight_1, b_1]]
     #ここから学習    
     for i in range(l):
+        random.shuffle(feat_lab)
+        print ('epoch {}'.format(i))
+        err_count = 0
         for phi_0, y in feat_lab:
             phiS = forward_nn(network, phi_0) #ここのphiSは各層のphiを要素とするもの
-            delta_ = backward_nn(network, phiS, y)
+            delta_, err_count = backward_nn(network, phiS, y, err_count)
             update_weights(network, phiS, delta_, lam)
-    with open('network.dump', 'wb') as net_f:
+        print ('err_coount {}'.format(err_count))
+    with open('network5_s_l.dump', 'wb') as net_f:
         pickle.dump(network, net_f)
     
-    with open('ids.dump', 'wb') as ids_f:
+    with open('ids5_s_l.dump', 'wb') as ids_f:
         pickle.dump(dict(ids), ids_f)
     
