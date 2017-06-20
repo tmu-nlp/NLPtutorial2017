@@ -30,20 +30,34 @@ def create_features(x):
         phi['UNI:'+word] += 1
     return phi
 #重みの更新    
-def update_weights(w, phi, y, c):
+def update_weights(w, phi, y, c, iteration, last):
+    """
     for name, value in w.items():
         if abs(value) < c:
             w[name] = 0
         else:
             w[name] -= sign(value) * c
+    """        
     for name, value in phi.items():
+        w[name] = getw(w, name, c, iteration, last)
         w[name] += int(value)*y
+#重みの正則化
+def getw(w, name, c, iteration, last):
+    if iteration != last[name]:     #重みが古くなっていたら更新するため速い！
+        c_size = c*(iteration - last[name])
+        if abs(w[name]) <= c_size:
+            w[name] = 0
+        else:
+            w[name] -= sign(w[name]) * c_size
+        last[name] = iteration
+    return w[name]    
 
 if __name__ == '__main__':
-    output_f = 'my_answer.labeled'
+    output_f = 'my_answer.test'
     input_f = '../../data/titles-en-test.word'
     w = defaultdict(int)
-    l = 10 #iteration
+    last = defaultdict(int)
+    l = 20 #iteration
     c = 10 ** -5
     margin = 1
     for i in range(l):
@@ -55,7 +69,7 @@ if __name__ == '__main__':
                     phi[key.replace('UNI:', '')] = value
                 val = predict_one(w, phi) * int(y)
                 if val <= margin:
-                    update_weights(w, phi, int(y), c)
+                    update_weights(w, phi, int(y), c, i, last)
     with open(output_f, 'w') as out_f:
         for text in predict_all(w, input_f):
             out_f.writelines(text)

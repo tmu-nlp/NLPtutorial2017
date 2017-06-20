@@ -1,5 +1,6 @@
 #予測
 from collections import defaultdict
+import math
 #def predict_all(model_file,input_file):
     #load w from model_file
     #model_fileは未作成：testプログラムにおいて読み込む
@@ -39,10 +40,21 @@ def sign(x):
     else:
         return -1
 
+sigmoid = defaultdict(lambda :0)
+
+def sigm(x,word):
+    if x >= 0:
+        sigmoid[word] += (math.exp(x)/(1+math.exp(x))**2)
+        return sigmoid[word]
+    else:
+        sigmoid[word] -= (math.exp(x)/(1+math.exp(x))**2)
+        return sigmoid[word]
+
+
 if __name__ == '__main__':
     w = defaultdict(lambda :0)
     l = 20 #iteration? : 試行数？
-    margin = 100
+    margin = 20
     c = 0.0001
     for i in range(l):
         with open('../../data/titles-en-train.labeled','r') as t_f:
@@ -57,7 +69,8 @@ if __name__ == '__main__':
                         if abs(w[word]) < c:
                             w[word] = 0
                         else:
-                            w[word] -= sign(w[word]) * c
+                            w[word] += sigm(w[word],word) * c
+#                            w[word] -= sign(w[word]) * c
                         w[word] += phi[word] * y
     with open('model_file.txt','w') as m_f:
 #        for line in m_f:
