@@ -51,8 +51,9 @@ def FORWARD_NN(network, phi_0):
 
 
 def BACKWARD_NN(network, phi, y, num_node):
-    error = [0, 0, np.array([y - phi[len(network)][0]])]
-    gra = [0, 0, 0]
+    error = [None for i in range(len(network))]
+    error.append(np.array([y - phi[len(network)][0]]))
+    gra = [None for i in range(len(network) + 1)]
     for i in range(len(network) - 1, -1, -1):
         gra[i+1] = error[i+1]*(1 - phi[i+1]**2)
         w, b = network[i]
