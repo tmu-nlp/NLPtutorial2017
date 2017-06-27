@@ -82,8 +82,6 @@ def update_weights(net,d_net,lam):
     net[3] += lam * d_net[3]
     net[4] += lam * d_net[4]
 
-lam = 0.005
-
 if __name__ == '__main__':
     word_data = []
     pos_data = []
@@ -114,6 +112,7 @@ if __name__ == '__main__':
 #        print(feat_lab)
     epoch = int(input('epoch :'))
     hide = int(input('hidden layer :'))
+    lam = float(input('lambda :'))
 
     rnn_net = create_net(hide)
 #    print(np.shape(rnn_net[]))
