@@ -42,10 +42,10 @@ def findmax(x):
 
 def create_net(hid):
     np.random.seed(1)
-    w_rx = (np.random.rand(hid,len(x_ids)) - 000.5) * 2 # -1~1
-    w_rh = (np.random.rand(hid,hid) - 000.5) * 2
+    w_rx = (np.random.rand(hid,len(x_ids)) - 0.5) / 50000 # -1~1
+    w_rh = (np.random.rand(hid,hid) - 0.5) / 50000
     b_r = np.zeros(hid)
-    w_oh = (np.random.rand(len(y_ids),hid) - 000.5) * 2
+    w_oh = (np.random.rand(len(y_ids),hid) - 0.5) / 50000
     b_o = np.zeros(len(y_ids))
     net = [w_rx,w_rh,b_r,w_oh,b_o]
     return net
