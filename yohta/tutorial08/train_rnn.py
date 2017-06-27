@@ -51,7 +51,13 @@ def create_net():
     return net
 
 def gradient_rnn(net,x,h,p,y_): # dd = delta-dash
-    d_net = create_net() # d_net[0-4] = [dw_rx,dw_rh,db_r,dw_oh,db_o]
+    dw_rx = np.zeros((2,len(x_ids)))
+    dw_rh = np.zeros((2,2))
+    db_r = np.zeros(2)
+    dw_oh = np.zeros((len(y_ids),2))
+    db_o = np.zeros(len(y_ids))
+    d_net = [dw_rx,dw_rh,db_r,dw_oh,db_o]
+    # d_net[0-4] = [dw_rx,dw_rh,db_r,dw_oh,db_o]
     dd_r = np.zeros(len(d_net[2]))
     for t in reversed(range(len(x))):
 #        for i in range(len(y_ids)):
@@ -118,8 +124,7 @@ if __name__ == '__main__':
 #            print(y_)
             delta_net = gradient_rnn(rnn_net,x,h,p,y_)
             update_weights(rnn_net,delta_net,lam)
-
-        print('\nepoch:{}\tcomplete!\n'.format(i))
+        print('\nepoch:{}\tcomplete!\n'.format(i+1))
 
     with open('weight_file','wb') as w_f:
         pickle.dump(rnn_net,w_f)
