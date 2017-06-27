@@ -1,4 +1,4 @@
-#python test-chainer-lstm.py ../../data/titles-en-test.word lstm_model xid.txt yid.txt my_answer_lstm.pos 50
+#python test-chainer-lstm.py ../../data/wiki-en-test.norm lstm_model xid.txt yid.txt my_answer_lstm.pos 50
 #../../script/gradepos.pl ../../data/wiki-en-test.pos my_answer_lstm.pos
 
 from collections import defaultdict
@@ -32,7 +32,7 @@ class RecurrentNeuralNetwork(Chain):
         for x in x_list:
             y_predict = functions.softmax(self.forward(Variable(numpy.array([x], dtype=numpy.float32))))
             y_list.append(numpy.argmax(list(y_predict.data[0])))
-        return y_predict
+        return y_list
 
 def create_ids(feature, ids, mode):
     if mode != "test" or feature in ids:
