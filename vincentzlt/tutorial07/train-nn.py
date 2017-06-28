@@ -1,198 +1,184 @@
 
 # coding: utf-8
 
-# In[1]:
+# In[226]:
 
 import numpy as np
-from IPython.core.debugger import Tracer
-#this one triggers the debugger
-from collections import defaultdict
 from pprint import pprint
+from time import time
+import pdir
 
 
-# In[2]:
+# In[209]:
 
-idx_dict=defaultdict(lambda:len(idx_dict))
-phi_dict=defaultdict(int)
-
-
-# In[3]:
-
-def update_phi(line,isupdate=True):
-    if isupdate:
-        for w in line.split():
-            phi_dict[idx_dict[w]]+=1
-
-
-# In[4]:
-
-def get_lines_from_file(f_name):
-    for line in open(f_name, "r",encoding="utf-8"):
-        yield line
-
-
-# In[5]:
-
-for line in get_lines_from_file("../../test/03-train-input.txt"):
-    cls, line=line.split("\t")
-    update_phi(line)
-
-
-# In[6]:
-
-pprint(idx_dict)
-phi_array=np.array(phi_dict.values())
-pprint(phi_array)
-assert len(idx_dict)==len(phi_dict)
-
-
-# In[7]:
-
-def gen_training_phi(line):
-    phi_array_ = np.zeros(len(phi_dict))
-    for w in line.split():
-        phi_array_[idx_dict[w]] += 1
-    return phi_array_
-
-
-# In[8]:
-
-for line in get_lines_from_file("../../test/03-train-input.txt"):
-    cls, line=line.split("\t")
-    print(gen_training_phi(line))
-
-
-# In[9]:
-
-def initialize_networks(*num_neurons_network):
-    num_neurons_prev=len(idx_dict)
-    ws_network=[]
-    b=np.array(1.0)
+def gen_ids(f_names):
+    words=[]
+    labels=[]
+    for line in open(f_names,"r",encoding="utf-8"):
+        label,sentence=line.split("\t")
+        labels.append(int(label))
+        for w in sentence.split():
+            words.append(w)
+    words=set(words)
+    w_ids={}
     
-    for num_neurons_current in num_neurons_network:
-        ws_layer=[]
-        for n in range(num_neurons_current):
-            ws_neuron=np.random.rand(num_neurons_prev)
-            ws_layer.append((ws_neuron,b))
-        ws_network.append(ws_layer)
-        num_neurons_prev=len(ws_layer)
-    
-    return ws_network
+    for w in words:
+        w_ids[w]=len(w_ids)
+    sentences=[]
+    for line in open(f_names,"r",encoding="utf-8"):
+        label,sentence=line.split("\t")
+        sent=np.zeros(len(w_ids))
+        for w in sentence.split():
+            sent[w_ids[w]]+=1
+        sentences.append(sent)
+    return w_ids,sentences,labels
+
+
+# In[249]:
+
+def gen_sent_phi(sentence,w_ids):
+    sent=np.zeros(len(w_ids))
+    for w in sentence.split():
+        if w in w_ids:
+            sent[w_ids[w]]+=1
+    return sent
+
+
+# In[211]:
+
+w_ids,sentences,labels=gen_ids("../../data/titles-en-train.labeled")
+
+
+# In[212]:
+
+sentences
+
+
+# In[213]:
+
+labels
+
+
+# In[243]:
+
+class NN():
+
+    def __init__(self, input_list, labels,w_ids, network_dims):
+        assert len(input_list) == len(labels)
         
-
-
-# In[10]:
-
-ws_network=initialize_networks(2,1)
-pprint(ws_network)
-
-
-# In[11]:
-
-def forward_nn(ws_network,phi_input):
-    phis_prev=phi_input
-    phis_network=[phi_input]
-    #pprint(ws_network)
-    for idx_layer,ws_layer in enumerate(ws_network):
-        #pprint(ws_layer)
-        phis_layer=[]
-        for idx_neuron,ws_neuron in enumerate(ws_layer):
-            #pprint(ws_neuron)
-            phis_layer.append(np.tanh(np.dot(phis_prev,ws_neuron[0])+ws_neuron[1]))
-        phis_prev=phis_layer
-        phis_network.append(np.array(phis_layer))
-    return phis_network
-
-
-# In[12]:
-
-phis_network=forward_nn(ws_network,gen_training_phi("Shoken , monk born in Kyoto"))
-pprint(phis_network)
-
-
-# In[13]:
-
-def backward_nn(ws_network,phis_network,label):
-    grad_deltas_network=[]
-    deltas_network=[]
-    
-    for idx_layer, layer in enumerate(reversed(phis_network)):
+        self.w_ids=w_ids
         
-        if idx_layer==0:
-            delta=np.array(label - layer)
-            #print(delta)
-            last_delta=delta
-            last_layer=layer
+        self.input_list = input_list
+        self.labels = labels
+        self.network_neuron_outputs = []
+        self.network_neuron_nets = []
+        self.network_neuron_bias = []
+
+        self.network_neuron_derr_net = []
+        self.network_neuron_dnet_weight = []
+
+        self.network_weights = []
+
+        dim_prev = len(input_list[0])
+        for i in range(len(network_dims)):
+            dim = network_dims[i]
+            self.network_weights.append(np.random.rand(dim_prev, dim) / 10)
+            self.network_neuron_bias.append(np.random.rand(dim) / 10)
+            self.network_neuron_outputs.append(np.zeros((dim)))
+            self.network_neuron_nets.append(np.zeros((dim)))
+            self.network_neuron_derr_net.append(np.zeros((dim)))
+            self.network_neuron_dnet_weight.append(np.zeros((dim)))
+            dim_prev = dim
+
+        self.network = (self.network_neuron_outputs, self.network_neuron_nets,
+                        self.network_neuron_derr_net,
+                        self.network_neuron_dnet_weight)
+
+    def print_network(self):
+        for w in self.__dict__:
+            if w.startswith("network"):
+                print(w)
+                pprint(self.__dict__[w])
+                print()
+
+    def ff_one(self, input_array):
+        self.input_array = input_array
+        for idx in range(len(self.network_weights)):
+            if idx == 0:
+                outputs_prev = input_array
+            else:
+                outputs_prev = self.network_neuron_outputs[idx - 1]
+            self.network_neuron_nets[idx] = np.dot(
+                outputs_prev,
+                self.network_weights[idx]) + 1 * self.network_neuron_bias[idx]
+            self.network_neuron_outputs[idx] = np.tanh(
+                self.network_neuron_nets[idx])
+
+    def bk_one(self, label):
+        err = label - self.network_neuron_outputs[-1]
+        for i in reversed(range(len(self.network_neuron_outputs))):
+            out = self.network_neuron_outputs[i]
+            net = self.network_neuron_nets[i]
+            if i != 0:
+                out_prev = self.network_neuron_outputs[i - 1]
+            else:
+                out_prev = self.input_array
+            w = self.network_weights[i]
+            if i == len(self.network_neuron_outputs) - 1:
+                derr_out = label - self.network_neuron_outputs[-1]
+            else:
+                derr_out = np.dot(self.network_neuron_derr_net[i + 1],
+                                  self.network_weights[i + 1].T)
+            dout_net = 1 - out**2
             
+
+            self.network_neuron_derr_net[i] = derr_out * dout_net
+            dnet_weight = np.outer(out_prev, self.network_neuron_derr_net[i])
+
+            self.network_neuron_dnet_weight[i] = dnet_weight
+
+    def update_weight(self, lrate=0.01):
+        for i in range(len(self.network_weights)):
+            self.network_weights[i] += self.network_neuron_dnet_weight[
+                i] * lrate
+            self.network_neuron_bias[i] += self.network_neuron_derr_net[
+                i] * lrate
+
+    def train(self, epoch=10, lrate=0.01):
+        for i in range(epoch):
+            start=time()
+            print("Epoch start:\t{}".format(i+1))
+            for input_array, label in zip(self.input_list, self.labels):
+                self.ff_one(input_array)
+                self.bk_one(label)
+                self.update_weight(lrate=lrate)
+            print("Epoch ends:\t{}. Spending {:0.2f} seconds.\n".format(i+1,time()-start))
+    def predict(self,sent):
+        self.ff_one(gen_sent_phi(sent,self.w_ids))
+        cls=self.network_neuron_outputs[-1]
+        if cls>0:
+            return 1
         else:
-            grad_delta=last_delta*(1-last_layer**2)
-            weight=np.vstack([t[0] for t in ws_network[-idx_layer]])
-            delta=np.dot(grad_delta,weight)
-            #print(grad_delta,delta)
-            last_delta=delta
-            last_layer=layer
-            #deltas_layer.append(delta)
-            #grad_deltas_layer.append(grad_delta)
-            deltas_network.append(delta)
-            grad_deltas_network.append(grad_delta)
-    
-    return grad_deltas_network
+            return -1
+            
 
 
-# In[14]:
+# In[244]:
 
-grad_deltas=backward_nn(ws_network,phis_network,1)
-pprint(grad_deltas)
-
-
-# In[15]:
-
-def update_weights(ws_network, phis_network, grad_deltas, learning_rate=0.01):
-    new_ws_network=[]
-    for idx_layer, layer in enumerate(phis_network):
-        new_ws_layer=[]
-        if idx_layer == 0:
-            layer_prev = layer
-        else:
-            grad_weight = np.outer(grad_deltas[-idx_layer], layer_prev)
-            layer_prev = layer
-            weight=np.vstack([w[0] for w in ws_network[idx_layer-1]])
-            bias=np.hstack([w[1] for w in ws_network[idx_layer-1]])
-            weight+=learning_rate*grad_weight
-            bias+=learning_rate*grad_deltas[-idx_layer]
-            for i ,j in zip(weight, bias):
-                new_ws_layer.append((np.array(i),np.array(j)))
-            new_ws_network.append(new_ws_layer)
-    return new_ws_network
+nn=NN(sentences,labels,w_ids,(2,1))
 
 
-# In[16]:
+# In[245]:
 
-update_weights(ws_network,phis_network,grad_deltas)
-
-
-# In[17]:
-
-def train_model(f_name,ws_network,num_iteration=10000):
-    for i in range(num_iteration):
-        for line in get_lines_from_file("../../test/03-train-input.txt"):
-            cls, line=line.split("\t")
-            cls=int(cls)
-            phi=gen_training_phi(line)
-            phi=forward_nn(ws_network,phi_input=phi)
-            grad_delta=backward_nn(label=cls,phis_network=phi,ws_network=ws_network)
-            ws_network=update_weights(ws_network,phis_network=phi,grad_deltas=grad_delta)
-    return ws_network
+nn.train(epoch=10,lrate=0.1)
 
 
-# In[18]:
+# In[251]:
 
-train_model("../../test/03-train-input.txt",ws_network)
-
-
-# In[19]:
-
-forward_nn(ws_network,gen_training_phi("Shoken , monk born in Kyoto"))
+test_file="../../data/titles-en-test.word"
+with open("my-answer","w",encoding="utf-8") as f:
+    for sent in open(test_file,"r",encoding="utf-8"):
+        f.write("{}\t{}".format(nn.predict(sent),sent))
 
 
 # In[ ]:
