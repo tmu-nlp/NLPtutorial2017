@@ -21,7 +21,10 @@ if __name__ == '__main__':
                     x.append(unk)
                     continue
                 x.append(CREATE_ONE_HOT(len(x_ids), x_ids['UNI:' + word]))
+
             h, p, y_pre = FORWARD_RNN(network, x)
+
             for each_y_pre in y_pre:
                 answer.append(sorted(y_ids.items(), key=lambda x: x[1])[each_y_pre][0])
+                
             print(' '.join(answer), file=data_out)
