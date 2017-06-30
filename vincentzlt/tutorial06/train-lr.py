@@ -1,10 +1,10 @@
-import sys,math,random
+import sys,math,random,itertools
 from collections import defaultdict
 from pprint import pprint
 
 class LR():
     def __init__(self, f_name):
-        self.weights=defaultdict(float)
+        self.weights=defaultdict(lambda:0.0)
         #phi_dict_all=defaultdict(int)
 
         self.training_data=[]
@@ -45,25 +45,26 @@ class LR():
             sum+=ws[w]*phi_dict[w]
         return sum
     # train the model with iter_times(100) and learning_rate alpha(0,001)
-    def train(self, iter_times=100, alpha=0.001, margin=10,c=1, testdata=None):
+    def train(self, iter_times=30, alpha=None, margin=50,c=0.0001, testdata=None):
         accuracies=[]
+        len_training_data=len(self.training_data)
         for ind,iter_ in enumerate(range(iter_times)):
             for label,line in self.training_data:
                 #print(label,line,sep='\t')
                 phi_dict=self.phi(line)
-
+                alpha = 1 / float(len(phi_dict)+len_training_data)
                 exp_e=self.sum_prod(phi_dict)
-                if exp_e*int(label) < margin:
+                if True:#exp_e*int(label) < margin:
                     update_phi_dict=self.grad_logistic(label,phi_dict,exp_e)
                     for w in update_phi_dict:
-                        if abs(self.weights[w])<c:
-                            self.weights[w]=0
-                        else:
-                            self.weights[w]-=sign(self.weights[w])*c
+                        #if abs(self.weights[w])<c:
+                        #    self.weights[w]=0
+                        #else:
+                        #    self.weights[w]-=sign(self.weights[w])*c
 
                         self.weights[w]+=alpha*update_phi_dict[w]
             
-            if ind%10==0:
+            if ind%3==0:
                 testdata=self.sample(self.training_data,0.1)
                 accuracy=self.test(testdata)
                 print("epich {ind}:\t{accuracy}".format(ind=ind,accuracy=accuracy))
@@ -95,7 +96,7 @@ class LR():
             for line in f:
                 label, sent = line.split("\t")
                 testing_data.append((label,line))
-        print(self.test(testing_data))
+        print("testing accuracy:",self.test(testing_data),sep='\t')
     # compute the grad descent value of logistic unction based on the label and sentence
     def grad_logistic(self, label, phi_dict,exp_e=None):
         e=math.e
@@ -110,7 +111,7 @@ class LR():
             phi_dict[w]*=coeff_phi
         return phi_dict
     def phi(self,line):
-        phi_dict=defaultdict(int)
+        phi_dict=defaultdict(lambda:0)
         for w in line.split():
             phi_dict[w]+=1
         return phi_dict
@@ -124,7 +125,11 @@ def sign(number):
 
 if __name__=="__main__":
     lr=LR("../../data/titles-en-train.labeled")
-    lr.train(iter_times=100)
+    margins=[0,50,100,150,200,100000]
+    cs=[0.000001,0.00001,0.0001,0.001,0.01,0.1,1]
+
+
+    lr.train()
     lr.test_f("../../data/titles-en-test.labeled")
     input()
                 
