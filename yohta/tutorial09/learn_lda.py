@@ -4,7 +4,7 @@ import math
 
 def sumple_one(probs):
     z = sum(probs)
-    remaining = random.uniform(0,z)
+    remaining = random.random(0,z)
     for i in range(len(probs)):
         remaining -= probs[i]
         if remaining <= 0:
@@ -25,7 +25,7 @@ def add_counts(word,topic,docid,amount):
         print ("error at function add_counts's y_counts")
         exit()
 
-num =  2# number of topics
+num =  5 # number of topics
 a = .05
 b = .05
 epoch = 10
@@ -37,7 +37,7 @@ if __name__ == '__main__':
     x_counts = defaultdict(lambda :0)
     y_counts = defaultdict(lambda :0)
     x_token = defaultdict(lambda :0)
-    with open('../../test/07-train.txt','r') as i_f:
+    with open('../../data/wiki-en-documents.word','r') as i_f:
         for line in i_f:
             docid = len(x_corpus)
             words = line.split()
@@ -51,6 +51,7 @@ if __name__ == '__main__':
             y_corpus.append(topics)
     # sumpling
     for ep in range(epoch):
+        print('epoch : {}\n'.format(epoch))
         ll = 0
         for i in range(len(x_corpus)):
             for j in range(len(x_corpus[i])):
@@ -68,8 +69,6 @@ if __name__ == '__main__':
                 y_corpus[i][j] = new_y
 #        print(ll)
 
-    for i in range(len(x_corpus)):
-        for j in range(len(x_corpus[i])):
-            x = x_corpus[i][j]
-            y = y_corpus[i][j]
-            print ('{}\t{} '.format(x, y))
+        for i in range(len(x_corpus)):
+            for j in range(len(x_corpus[i])):
+                print ('{}\t{} '.format(x_corpus[i][j], y_corpus[i][j]))
