@@ -1,7 +1,7 @@
 
 # coding: utf-8
 
-# In[56]:
+# In[94]:
 
 
 import numpy as np
@@ -10,7 +10,7 @@ from collections import defaultdict
 from pprint import pprint
 
 
-# In[42]:
+# In[95]:
 
 
 def sampleone(probs):
@@ -22,13 +22,13 @@ def sampleone(probs):
             return i
 
 
-# In[43]:
+# In[96]:
 
 
-test_file="../../test/07-train.txt"
+test_file="../../data/wiki-en-documents.word"
 
 
-# In[44]:
+# In[97]:
 
 
 def gen_ids(f_name):
@@ -40,18 +40,19 @@ def gen_ids(f_name):
     return ids
 
 
-# In[45]:
-
-
-gen_ids(test_file)
-
-
-# In[58]:
+# In[101]:
 
 
 x_corpus,y_corpus=[],[]
 x_counts,y_counts=defaultdict(int),defaultdict(int)
-num_topics=2
+num_topics=20
+smoothing_a=0.001
+smoothing_b=0.001
+
+
+# In[102]:
+
+
 for line in open(test_file,"r",encoding="utf-8"):
     docid=len(x_corpus)
     words=line.split()
@@ -61,9 +62,11 @@ for line in open(test_file,"r",encoding="utf-8"):
     x_corpus.append(words)
     y_corpus.append(topics)
     
+Nx=len(set(w for line in x_corpus for w in line ))
+Ny=len(set(t for line in y_corpus for t in line ))
 
 
-# In[47]:
+# In[103]:
 
 
 def addcounts(word,topic,docid,amount):
@@ -74,19 +77,10 @@ def addcounts(word,topic,docid,amount):
     y_counts[(topic,docid)]+=amount
 
 
-# In[48]:
+# In[ ]:
 
 
-x_corpus
-y_corpus
-x_counts
-y_counts
-
-
-# In[59]:
-
-
-for iters in range(1000):
+for iters in range(10):
     II = 0
     for i in range(len(x_corpus)):
         for j in range(len(x_corpus[i])):
@@ -95,27 +89,30 @@ for iters in range(1000):
             addcounts(x, y, i, -1)
             probs = []
             for k in range(num_topics):
-                probs.append((x_counts[(x, k)] / y_counts[k]) *
-                             (y_counts[k] / len(x_corpus[i])))
+                probs.append(((x_counts[(x, k)]+ smoothing_a) / (y_counts[k]+smoothing_a*Nx)) *
+                             ((y_counts[(k,i)]+smoothing_b) / (len(x_corpus[i])+smoothing_b*Ny)))
+            #print(probs)
             new_y = sampleone(probs)
+            #print(new_y)
             try:
                 II += np.log(probs[new_y])
             except:
                 pass
             addcounts(x, new_y, i, 1)
             y_corpus[i][j] = new_y
-            pprint(x_corpus)
-            pprint(y_corpus)
-            pprint(x_counts)
-            pprint(y_counts)
-            input()
+#             pprint(x_corpus)
+#             pprint(y_corpus)
+#             pprint(x_counts)
+#             pprint(y_counts)
+            
     print(II)
-print(len(set([w for w in line for line in x_corpus])))
-print(len(set([t for t in line for line in y_corpus])))
+print(len(set(w  for line in x_corpus for w in line)))
+print(len(set(t for line in y_corpus for t in line )))
 
 
-# In[ ]:
+# In[75]:
 
 
-
+x_counts
+y_counts
 
