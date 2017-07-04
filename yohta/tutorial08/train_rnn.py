@@ -40,18 +40,24 @@ def findmax(x):
 #    print(y)
     return y
 
-def create_net():
+def create_net(hid):
     np.random.seed(1)
-    w_rx = (np.random.rand(2,len(x_ids)) - 0.5) * 2 # -1~1
-    w_rh = (np.random.rand(2,2) - 0.5) * 2
-    b_r = np.zeros(2)
-    w_oh = (np.random.rand(len(y_ids),2) - 0.5) * 2
+    w_rx = (np.random.rand(hid,len(x_ids)) - 0.5) / 50000 # -1~1
+    w_rh = (np.random.rand(hid,hid) - 0.5) / 50000
+    b_r = np.zeros(hid)
+    w_oh = (np.random.rand(len(y_ids),hid) - 0.5) / 50000
     b_o = np.zeros(len(y_ids))
     net = [w_rx,w_rh,b_r,w_oh,b_o]
     return net
 
-def gradient_rnn(net,x,h,p,y_): # dd = delta-dash
-    d_net = create_net() # d_net[0-4] = [dw_rx,dw_rh,db_r,dw_oh,db_o]
+def gradient_rnn(net,x,h,p,y_,hid): # dd = delta-dash
+    dw_rx = np.zeros((hid,len(x_ids)))
+    dw_rh = np.zeros((hid,hid))
+    db_r = np.zeros(hid)
+    dw_oh = np.zeros((len(y_ids),hid))
+    db_o = np.zeros(len(y_ids))
+    d_net = [dw_rx,dw_rh,db_r,dw_oh,db_o]
+    # d_net[0-4] = [dw_rx,dw_rh,db_r,dw_oh,db_o]
     dd_r = np.zeros(len(d_net[2]))
     for t in reversed(range(len(x))):
 #        for i in range(len(y_ids)):
@@ -75,8 +81,6 @@ def update_weights(net,d_net,lam):
     net[2] += lam * d_net[2]
     net[3] += lam * d_net[3]
     net[4] += lam * d_net[4]
-
-lam = 0.005
 
 if __name__ == '__main__':
     word_data = []
@@ -106,20 +110,21 @@ if __name__ == '__main__':
                 pos_list.append(create_onehot(y_ids[pos],len(y_ids)))
             feat_lab.append([word_list,pos_list])
 #        print(feat_lab)
-
-    rnn_net = create_net()
-#    print(np.shape(rnn_net[]))
     epoch = int(input('epoch :'))
+    hide = int(input('hidden layer :'))
+    lam = float(input('lambda :'))
+
+    rnn_net = create_net(hide)
+#    print(np.shape(rnn_net[]))
     for i in range(epoch):
         random.shuffle(feat_lab)
         for x,y_ in feat_lab:
 #            print(np.shape(x))
             h,p,y = forward_rnn(rnn_net,x)
 #            print(y_)
-            delta_net = gradient_rnn(rnn_net,x,h,p,y_)
+            delta_net = gradient_rnn(rnn_net,x,h,p,y_,hide)
             update_weights(rnn_net,delta_net,lam)
-
-        print('\nepoch:{}\tcomplete!\n'.format(i))
+        print('\nepoch:{}\tcomplete!\n'.format(i+1))
 
     with open('weight_file','wb') as w_f:
         pickle.dump(rnn_net,w_f)

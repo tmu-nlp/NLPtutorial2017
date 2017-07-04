@@ -72,11 +72,12 @@ def forward_rnn(net,x):
     return h,p,y
 
 def gradient_rnn(net,x,h,p,y):
+    hidden = int(sys.argv[2])
     w_rx, w_rh, b_r, w_oh, b_o = net
-    dw_rx = np.zeros((2,len(ids_x)))
-    dw_rh = np.zeros((2,2))
-    db_r = np.zeros((2,1))
-    dw_oh = np.zeros((len(ids_y),2))
+    dw_rx = np.zeros((hidden,len(ids_x)))
+    dw_rh = np.zeros((hidden,hidden))
+    db_r = np.zeros((hidden,1))
+    dw_oh = np.zeros((len(ids_y),hidden))
     db_o = np.zeros((len(ids_y),1))
     err_r_ = np.zeros((len(b_r),1))
     for t in reversed(range(len(x))):
@@ -92,7 +93,7 @@ def gradient_rnn(net,x,h,p,y):
         dw_rx += np.outer(err_r_, x[t])
         db_r += err_r_
         if t != 0:
-            dw_rh += np.outer(h[t-1], err_r_)
+            dw_rh += np.outer(err_r_, h[t-1])
         dnet = [dw_rx, dw_rh, db_r, dw_oh, db_o]
     return dnet
 
@@ -102,13 +103,14 @@ def update_weights(net,dnet,lambda_):
     return net
 
 def train(epoch, ids_x, ids_y, train_file):
-    lambda_ = float(sys.argv[2])
+    lambda_ = float(sys.argv[3])
+    hidden = int(sys.argv[2])
     with open(train_file) as train:
         featlab = make_featlab(train, ids_x, ids_y)
-    w_rx = (np.random.rand(2,len(ids_x)) - 0.5) / 5
-    w_rh = (np.random.rand(2, 2) - 0.5) / 5
-    b_r = np.zeros((2,1))
-    w_oh = (np.random.rand(len(ids_y), 2) - 0.5) / 5
+    w_rx = (np.random.rand(hidden,len(ids_x)) - 0.5) / 500
+    w_rh = (np.random.rand(hidden, hidden) - 0.5) / 500
+    b_r = np.zeros((hidden,1))
+    w_oh = (np.random.rand(len(ids_y), hidden) - 0.5) / 500
     b_o = np.zeros((len(ids_y),1))
     net = [w_rx,w_rh,b_r,w_oh,b_o]
     for i in range(epoch):
@@ -127,6 +129,7 @@ if __name__ == '__main__':
     ids_x, ids_y = make_ids(train_file)
 #ids作成済み
     net = train(epoch, ids_x, ids_y, train_file)
+#    print(net)
     with open('weight_file.byte','wb') as w, open('ids_x_file.byte','wb') as ids_x_data, open('ids_y_file.byte','wb') as ids_y_data:
         pickle.dump(net,w)
         pickle.dump(dict(ids_x),ids_x_data)
