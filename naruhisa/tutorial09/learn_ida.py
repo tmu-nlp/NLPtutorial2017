@@ -20,7 +20,7 @@ def PROB_y(k, y):
 
 def SAMPLEONE(prob):
     z = sum(prob)
-    remaining = random.uniform(0, z)
+    remaining = random.random() * z
     for i in range(len(prob)):
         remaining -= prob[i]
         if remaining <= 0:
@@ -30,9 +30,11 @@ def SAMPLEONE(prob):
 
 
 if __name__ == '__main__':
+    train = '../../data/wiki-en-documents.word'
+    test = '../../test/07-train.txt'
     NUM_TOPICS = 2
-    epoch = 5
-    with open('../../data/wiki-en-documents.word', 'r') as train_f:
+    epoch = 10
+    with open(test, 'r') as train_f:
         xcorpus = list()
         ycorpus = list()
         xcounts = defaultdict(lambda: 0)
@@ -49,9 +51,9 @@ if __name__ == '__main__':
             ycorpus.append(topics)
 #    print(xcorpus)
 #    print(ycorpus)
-    alpha = .001
-    beta = .001
-    N_x = 100 #N_x数えるの手間だったので見逃していただきたく
+    alpha = .01
+    beta = .01
+    N_x = 1000 #N_x数えるの手間だったので見逃していただきたく
     N_y = NUM_TOPICS
     pp = 0
     for l in range(epoch):
@@ -68,7 +70,8 @@ if __name__ == '__main__':
                 pp += np.log(probs[new_y])
                 ADDCOUNTS(x, new_y, i, 1)
                 ycorpus[i][j] = new_y
-
+                print(xcorpus[i][j], ycorpus[i][j])
+'''
     with open('../../test/07-train.txt', 'r') as f:
         result = defaultdict(list)
         for id_x, line in enumerate(f):
@@ -80,3 +83,4 @@ if __name__ == '__main__':
                 predict = SAMPLEONE(probs)
                 result[predict].append(word)
         print(result)
+'''
