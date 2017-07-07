@@ -85,3 +85,4 @@ if __name__ == "__main__":
 
             t =Tree.fromstring(S)
             t.pretty_print()
+            t.draw()
