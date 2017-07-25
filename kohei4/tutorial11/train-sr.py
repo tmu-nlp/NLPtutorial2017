@@ -89,7 +89,7 @@ if __name__ == "__main__":
     input_file = '../../data/mstparser-en-train.dep'
 
     deb_n = 0
-    iter_n = 1
+    iter_n = 100
 
     data = []
     queue = []
@@ -120,7 +120,7 @@ if __name__ == "__main__":
         random.shuffle(data)
         for jj, (queue, heads) in enumerate(data):
             #if jj >= deb_n and jj <= deb_n :
-                ShiftReduceTrain(queue, heads, weights )
+                ShiftReduceTrain(queue[:], heads[:], weights )
 
     #print(weights)
 
