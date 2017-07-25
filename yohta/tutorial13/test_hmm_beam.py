@@ -26,12 +26,12 @@ with open('../../data/wiki-en-test.norm') as text:
         words = line.strip().split()
         best_score = dict()
         best_edge = dict()
-        tags = list()
+        tags = []
         best_score['0 <s>'] = 0
         best_edge['0 <s>'] = None
         tags.append(['<s>'])
         for i in range(len(words)):
-            my_best = dict()
+            best = dict()
             for prev in tags[i]:
                 for nex in possible_tags.keys():
                     if (str(i)+' '+prev) in best_score and (prev+' '+nex) in trans:
@@ -39,10 +39,10 @@ with open('../../data/wiki-en-test.norm') as text:
                         if (str(i+1)+' '+nex) not in best_score or best_score[str(i+1)+' '+nex] > score:
                             best_score[str(i+1)+' '+nex] = score
                             best_edge[str(i+1)+' '+nex] = str(i)+' '+prev
-                            my_best[nex] = score
+                            best[nex] = score
             tags.append([])
 
-            for key, value in sorted(my_best.items(), key = lambda x:x[1]):
+            for key, value in sorted(best.items(), key = lambda x:x[1]):
                 tags[i+1].append(key)
                 if len(tags[i+1]) == beam:
                   break
@@ -57,7 +57,7 @@ with open('../../data/wiki-en-test.norm') as text:
         tags = []
         next_edge = best_edge[str(len(words)+1)+' '+'</s>']
         while next_edge != '0 <s>':
-            position, tag = next_edge.split()
+            _,tag = next_edge.split()
             tags.append(tag)
             next_edge = best_edge[next_edge]
         tags.reverse()
