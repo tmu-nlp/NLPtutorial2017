@@ -37,29 +37,22 @@ def CREATE_ONE_HOT(len_one_hot, id_one):
     return one_hot
 
 
-def init_network(num_node):
+def init_network(num_node, delta=0):
     np.random.seed(1)
-    w_rx = (np.random.rand(num_node, len(x_ids))-0.5)/5      # network[0][0]
-    b_r = np.zeros(num_node)                                 # network[0][1]
-    w_rh = (np.random.rand(num_node, num_node)-0.5)/5        # network[1][0]
-    w_oh = (np.random.rand(len(y_ids), num_node)-0.5)/5      # network[2][0]
-    b_o = np.zeros(len(y_ids))                               # network[2][1]
+    if delta == 0:
+        w_rx = (np.random.rand(num_node, len(x_ids))-0.5)/5    # network[0][0]
+        w_rh = (np.random.rand(num_node, num_node)-0.5)/5      # network[1][0]
+        w_oh = (np.random.rand(len(y_ids), num_node)-0.5)/5    # network[2][0]
+    else:
+        w_rx = np.zeros((num_node, len(x_ids)))
+        w_rh = np.zeros((num_node, num_node))
+        w_oh = np.zeros((len(y_ids), num_node))
+    b_r = np.zeros(num_node)                                   # network[0][1]
+    b_o = np.zeros(len(y_ids))                                 # network[2][1]
 
     network = np.array([[w_rx, b_r], [w_rh], [w_oh, b_o]])
 
     return network
-
-
-def init_delta_network(network):
-    delta_w_rx = np.zeros(np.shape(network[0][0]))
-    delta_b_r = np.zeros(np.shape(network[0][1]))
-    delta_w_rh = np.zeros(np.shape(network[1][0]))
-    delta_w_oh = np.zeros(np.shape(network[2][0]))
-    delta_b_o = np.zeros(np.shape(network[2][1]))
-
-    delta_network = np.array([[delta_w_rx, delta_b_r], [delta_w_rh], [delta_w_oh, delta_b_o]])
-
-    return delta_network
 
 
 def softmax(scores):
@@ -89,11 +82,11 @@ def FORWARD_RNN(network, x):
     return h, p, y_pre
 
 
-def GRADIENT_RNN(network, x, y, h, p):
+def GRADIENT_RNN(network, x, y, h, p, num_node):
     # w_rx = network[0][0], b_r = network[0][1]
     # w_ rh = network[1][0]
     # w_oh = network[2][0], b_o = network[2][1]
-    delta_network = init_delta_network(network)
+    delta_network = init_network(num_node, delta=1)
     gra_r = np.zeros(np.shape(network[0][1]))
     for t in range(len(x)-1, -1, -1):
         y_one_hot = CREATE_ONE_HOT(len(y_ids), y[t])
@@ -123,7 +116,7 @@ def train_nn(feat_lab, network, num_node):
     for i, sentence in enumerate(feat_lab):
         x, y = sentence
         h, p, y_pre = FORWARD_RNN(network, x)
-        delta_network = GRADIENT_RNN(network, x, y, h, p)
+        delta_network = GRADIENT_RNN(network, x, y, h, p, num_node)
         UPDATE_WEIGHTS(network, delta_network, rate_train)
 
 
