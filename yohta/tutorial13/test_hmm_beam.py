@@ -20,6 +20,7 @@ with open('../tutorial04/model-hmm.txt') as model_file:
 
 
 with open('../../data/wiki-en-test.norm') as text:
+    all_tags = []
     for line in text:
         words = line.strip().split()
         l = len(words)
@@ -52,12 +53,16 @@ with open('../../data/wiki-en-test.norm') as text:
                 if (str(len(words) + 1) + ' ' + '</s>') not in best_score or best_score[str(len(words) + 1) + ' ' + '</s>'] > score:
                     best_score[str(len(words) + 1) + ' ' + '</s>'] = score
                     best_edge[str(len(words) + 1) + ' ' + '</s>'] = str(len(words)) + ' ' + prev
+
         tags = []
         next_edge = best_edge[str(l + 1)  + ' ' + '</s>']
-
         while next_edge != '0 <s>':
             position, tag = next_edge.split()
             tags.append(tag)
             next_edge = best_edge[next_edge]
         tags.reverse()
-        print(' '.join(tags))
+        all_tags.append(tags)
+    with open('my_answer.pos','w') as o_f:
+        for tag in all_tags:
+            o_f.write(' '.join(tag))
+            o_f.write('\n')
