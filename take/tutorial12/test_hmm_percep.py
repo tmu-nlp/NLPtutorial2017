@@ -17,20 +17,18 @@ model_file = 'wiki.model'
 
 
 def create_trans(a, b):
-    _ret = defaultdict(float)
-    _ret['T,{},{}'.format(a, b)] = 1.
+    _ret = defaultdict(int)
+    _ret['T,{},{}'.format(a, b)] = 1
     return _ret
 
 
 def create_emit(a, b):
-    _ret = defaultdict(float)
-    _ret['E,{},{}'.format(a, b)] = 1.
-    if b[0].isupper():
-        _ret['CAPS,{}'.format(a)] = 1.
+    _ret = defaultdict(int)
+    _ret['E,{},{}'.format(a, b)] = 1
     return _ret
 
 
-def hmm_viterbi(w, _words):
+def hmm_viterbi(_words):
 
     best_score = defaultdict(float)
     best_edge = defaultdict(str)
@@ -40,7 +38,7 @@ def hmm_viterbi(w, _words):
     num_of_words = len(_words)
 
     for i in range(num_of_words):  # 0 <= i < len(word)
-        phi = defaultdict(float)
+        phi = defaultdict(int)
         for prev_tag in possible_tags.keys():
             for next_tag in possible_tags.keys():
                 if (str(i) + ' ' + prev_tag) in best_score.keys() and \
@@ -49,10 +47,9 @@ def hmm_viterbi(w, _words):
                     phi.update(create_trans(prev_tag, next_tag))
                     phi.update(create_emit(next_tag, _words[i]))
 
-
-                    t_key = 'T,' + prev_tag+',' + next_tag
-                    e_key = 'E,' + next_tag+',' + _words[i]
-                    add_score = w[t_key] * (phi[t_key] + phi[e_key])
+                    t_key = 'T,{},{}'.format(prev_tag, next_tag)
+                    e_key = 'E,{},{}'.format(next_tag, _words[i])
+                    add_score = w_global[t_key] * phi[t_key] + w_global[e_key] * phi[e_key]
 
                     score = best_score[str(i) + ' ' + prev_tag] + add_score
 
@@ -69,8 +66,9 @@ def hmm_viterbi(w, _words):
                         (prev_tag + ' ' + next_tag) in transition.keys():
 
             phi.update(create_trans(prev_tag, next_tag))
-            t_key = 'T,' + prev_tag + ',' + next_tag
-            score = best_score[str(num_of_words) + ' ' + prev_tag] + phi[t_key] * w[t_key]
+            t_key = 'T,{},{}'.format(prev_tag, next_tag)
+            add_score = w_global[t_key] * phi[t_key]
+            score = best_score[str(num_of_words) + ' ' + prev_tag] + add_score
 
             if str(num_of_words + 1) + ' ' + next_tag not in best_score.keys() \
                     or best_score[str(num_of_words + 1) + ' ' + next_tag] < score:
@@ -96,9 +94,9 @@ test_input = '../../data/wiki-en-test.norm'
 if __name__ == "__main__":
 
     with open('hmm_percep.dill', 'rb') as f:
-        weight, possible_tags, transition = dill.load(f)
+        w_global, possible_tags, transition = dill.load(f)
 
     with open(test_input) as f, open('hmm-percep.ans', 'w') as ans_f:
         for l in f:
             words = l.strip().split()
-            print(' '.join(hmm_viterbi(weight, words)), file=ans_f)
+            print(' '.join(hmm_viterbi(words)), file=ans_f)
