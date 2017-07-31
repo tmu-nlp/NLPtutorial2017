@@ -3,8 +3,8 @@ from collections import defaultdict
 import math
 
 def forward_step(line,lm,tm):
-    lambda_lmprob = 0.0001
-    lambda_tmprob = 0.0001
+    lambda_lmprob = 0.00001
+    lambda_tmprob = 0.00001
     edge = defaultdict(dict)
     score = defaultdict(lambda:defaultdict(int))
     edge[0]['<s>'] = 'NULL'
