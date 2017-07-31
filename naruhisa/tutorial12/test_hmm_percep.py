@@ -2,6 +2,7 @@ from collections import defaultdict
 import pickle
 import random
 
+
 def HMM_VITERBI(w, X):
     best_edge = defaultdict(None)
     best_score = defaultdict(int)

@@ -1,6 +1,7 @@
 from collections import defaultdict
 import numpy as np
 
+
 P_T = dict()
 P_E = dict()
 p_tags = set()
