@@ -42,8 +42,8 @@ def Sampleone(probs):
             exit()
 
 if __name__ == '__main__':
-    test_file = '../../data/wiki-en-documents.word'
-#    test_file = '../../test/07-train.txt'
+#    test_file = '../../data/wiki-en-documents.word'
+    test_file = '../../test/07-train.txt'
     epoch = int(sys.argv[2])
     num_topics = int(sys.argv[1])
     alpha = 0.01
